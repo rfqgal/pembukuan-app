@@ -1,23 +1,26 @@
 import { Head } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import CardStatistic from '@/Components/Charts/CardStatistic';
+import CardSubLayout from '@/Layouts/SubLayouts/CardSubLayout';
 
 export default function Dashboard({ auth }) {
   return (
-    <AuthenticatedLayout
-      user={auth.user}
-      header={(
-        <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-          Dashboard
-        </h2>
-      )}
-    >
+    <AuthenticatedLayout user={auth.user}>
       <Head title="Dashboard" />
-      <div className="py-12">
-        <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-          <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div className="p-6 text-gray-900">You&apos;re logged in!</div>
-          </div>
-        </div>
+
+      <div className="grid grid-cols-3 gap-4">
+        <CardStatistic className="bg-yellow-300" value={57000000} description="Saldo saat ini" />
+        <CardStatistic className="bg-green-500" value={5000000} description="Pemasukan bulan ini" />
+        <CardStatistic className="bg-red-500" value={3000000} description="Pengeluaran bulan ini" />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <CardSubLayout heading="Pemasukan">
+          Table
+        </CardSubLayout>
+        <CardSubLayout heading="Pengeluaran">
+          Table
+        </CardSubLayout>
       </div>
     </AuthenticatedLayout>
   );

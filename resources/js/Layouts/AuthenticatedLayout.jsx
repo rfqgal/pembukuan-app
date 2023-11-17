@@ -100,7 +100,7 @@ export default function Authenticated({ user, children }) {
           </div>
         </Header>
         {children
-          ? <main className="min-h-screen p-6">{children}</main>
+          ? <main className="min-h-screen p-6 space-y-4">{children}</main>
           : (
             <main className="min-h-screen p-6">
               <Content
