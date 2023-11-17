@@ -30,7 +30,7 @@ function Trigger({ children }) {
 
   return (
     <>
-      <button type="button" className="block" onClick={toggleOpen}>
+      <button type="button" className="flex" onClick={toggleOpen}>
         {children}
       </button>
 
