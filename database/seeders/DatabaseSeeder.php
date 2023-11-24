@@ -2,7 +2,10 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Balance;
+use App\Models\User;
+use Database\Seeders\IncomeOutcomeSeeder;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -12,11 +15,21 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
+        User::firstOrCreate([
+            'name' => 'Super Admin',
+        ], [
+            'email' => 'admin@example.com',
+            'password' => 'password',
+        ]);
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        Balance::firstOrCreate([
+            'id' => 1,
+        ], [
+            'nominal' => 0,
+        ]);
+
+        $this->call([
+            IncomeOutcomeSeeder::class,
+        ]);
     }
 }
