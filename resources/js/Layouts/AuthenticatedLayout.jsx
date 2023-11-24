@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  Layout, Menu, Button, theme,
+  Layout, Menu, Button, theme, Select,
 } from 'antd';
 import {
   DownCircleOutlined,
@@ -9,20 +9,36 @@ import {
   MenuUnfoldOutlined,
   UpCircleOutlined,
 } from '@ant-design/icons';
+import { Link } from '@inertiajs/react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 
 export default function Authenticated({ user, children }) {
   const { Header, Sider, Content } = Layout;
 
-  const [collapsed, setCollapsed] = useState(true);
+  const [collapsed, setCollapsed] = useState(false);
   const { token: { colorBgContainer } } = theme.useToken();
 
-  const navbarMenu = [
-    { key: 'dashboard', icon: <HomeOutlined />, label: 'Dashboard' },
-    { key: 'income', icon: <DownCircleOutlined />, label: 'Pemasukan' },
-    { key: 'outcome', icon: <UpCircleOutlined />, label: 'Pengeluaran' },
-  ];
+  const onChangeYear = (value) => {
+    console.log(`selected ${value}`);
+  };
+  const onChangePeriod = (value) => {
+    console.log(`selected ${value}`);
+  };
+
+  const navbarMenu = [{
+    key: 'dashboard',
+    icon: <HomeOutlined />,
+    label: <Link href={route('dashboard')}>Dashboard</Link>,
+  }, {
+    key: 'income',
+    icon: <DownCircleOutlined />,
+    label: <Link href={route('income.index')}>Pemasukan</Link>,
+  }, {
+    key: 'outcome',
+    icon: <UpCircleOutlined />,
+    label: <Link href={route('outcome.index')}>Pengeluaran</Link>,
+  }];
 
   return (
     <Layout>
@@ -60,13 +76,45 @@ export default function Authenticated({ user, children }) {
               height: 64,
             }}
           />
-          <div className="flex pr-6 items-center">
+          <div className="flex pr-6 items-center space-x-4">
+            <div className="flex space-x-2">
+
+              <Select
+                defaultValue="2023"
+                style={{
+                  width: 80,
+                }}
+                onChange={onChangeYear}
+                options={[
+                  { value: '2022', label: '2022' },
+                  { value: '2023', label: '2023' },
+                ]}
+              />
+              <Select
+                defaultValue="MTD"
+                style={{
+                  width: 100,
+                }}
+                onChange={onChangePeriod}
+                options={[
+                  { value: 'Today', label: 'Hari ini' },
+                  { value: 'MTD', label: 'Bulanan' },
+                  { value: 'YTD', label: 'Tahunan' },
+                  { value: 'All', label: 'Semua' },
+                ]}
+              />
+            </div>
+
+            <div className="py-3 h-full">
+              <div className="w-[0.5px] h-full bg-gray-400/50" />
+            </div>
+
             <Dropdown>
               <Dropdown.Trigger>
                 <span className="inline-flex rounded-md">
                   <button
                     type="button"
-                    className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
+                    className="inline-flex items-center px-3 py-2 border text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
                   >
                     {user.name}
                     <svg
@@ -86,14 +134,14 @@ export default function Authenticated({ user, children }) {
               </Dropdown.Trigger>
               <Dropdown.Content>
                 <Dropdown.Link href={route('profile.edit')}>
-                  Profile
+                  Profil saya
                 </Dropdown.Link>
                 <Dropdown.Link
                   href={route('logout')}
                   method="post"
                   as="button"
                 >
-                  Log Out
+                  Logout
                 </Dropdown.Link>
               </Dropdown.Content>
             </Dropdown>
