@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Income;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class IncomeController extends Controller
 {
@@ -12,7 +13,7 @@ class IncomeController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('Income/IndexPage');
     }
 
     /**

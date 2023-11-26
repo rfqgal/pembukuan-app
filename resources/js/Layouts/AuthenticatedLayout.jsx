@@ -13,7 +13,7 @@ import { Link } from '@inertiajs/react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 
-export default function Authenticated({ user, children }) {
+export default function AuthenticatedLayout({ user, children }) {
   const { Header, Sider, Content } = Layout;
 
   const [collapsed, setCollapsed] = useState(false);
