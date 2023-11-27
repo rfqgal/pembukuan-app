@@ -17,4 +17,23 @@ class Balance extends Model
     protected $fillable = [
         'nominal',
     ];
+
+    /**
+     * Balance trigger by income.
+     *
+     * @param integer $income
+     * @return object
+     */
+    public static function createIncome(int $income)
+    {
+        $balance = Balance::find(1);
+        $balanceBefore = $balance->nominal;
+
+        $balanceAfter = $balanceBefore + $income;
+
+        $balance->nominal = $balanceAfter;
+        $balance->save();
+
+        return (object)['before' => $balanceBefore, 'after' => $balanceAfter];
+    }
 }

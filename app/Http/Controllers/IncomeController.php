@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Response\APIResponse;
+use App\Models\Balance;
 use App\Models\Income;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class IncomeController extends Controller
@@ -16,12 +20,27 @@ class IncomeController extends Controller
         return Inertia::render('Income/IndexPage');
     }
 
+    public function indexApi(Request $request)
+    {
+        return DB::table('incomes')
+            ->when($request->has('order', 'field'), function (Builder $query) use ($request) {
+                $order = substr($request->order, 0, 3) === 'asc'
+                    ? substr($request->order, 0, 3)
+                    : substr($request->order, 0, 4);
+                $query->orderBy($request->field, $order);
+            })
+            ->when(!$request->has('order', 'field'), function (Builder $query) use ($request) {
+                $query->orderByDesc('created_at');
+            })
+            ->paginate($request->pageSize);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        return Inertia::render('Income/CreatePage');
     }
 
     /**
@@ -29,7 +48,20 @@ class IncomeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $balance = Balance::createIncome($request->nominal);
+        
+        $create = Income::create([
+            'nominal' => $request->nominal,
+            'description' => $request->description,
+            'date' => $request->date,
+            'balance_before' => $balance->before,
+            'balance_after' => $balance->after,
+        ]);
+
+        if ($create) {
+            return APIResponse::success('Pemasukan telah berhasil dibuat!', $create);
+        }
+        return APIResponse::error('Pemasukan gagal dibuat!', $create);
     }
 
     /**
