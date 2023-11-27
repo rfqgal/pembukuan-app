@@ -13,7 +13,7 @@ import { Link } from '@inertiajs/react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 
-export default function AuthenticatedLayout({ user, children }) {
+export default function AuthenticatedLayout({ user, children, hideFilter }) {
   const { Header, Sider, Content } = Layout;
 
   const [collapsed, setCollapsed] = useState(false);
@@ -77,38 +77,39 @@ export default function AuthenticatedLayout({ user, children }) {
             }}
           />
           <div className="flex pr-6 items-center space-x-4">
-            <div className="flex space-x-2">
-
-              <Select
-                defaultValue="2023"
-                style={{
-                  width: 80,
-                }}
-                onChange={onChangeYear}
-                options={[
-                  { value: '2022', label: '2022' },
-                  { value: '2023', label: '2023' },
-                ]}
-              />
-              <Select
-                defaultValue="MTD"
-                style={{
-                  width: 100,
-                }}
-                onChange={onChangePeriod}
-                options={[
-                  { value: 'Today', label: 'Hari ini' },
-                  { value: 'MTD', label: 'Bulanan' },
-                  { value: 'YTD', label: 'Tahunan' },
-                  { value: 'All', label: 'Semua' },
-                ]}
-              />
-            </div>
-
-            <div className="py-3 h-full">
-              <div className="w-[0.5px] h-full bg-gray-400/50" />
-            </div>
-
+            {!hideFilter && (
+              <>
+                <div className="flex space-x-2">
+                  <Select
+                    defaultValue="2023"
+                    style={{
+                      width: 80,
+                    }}
+                    onChange={onChangeYear}
+                    options={[
+                      { value: '2022', label: '2022' },
+                      { value: '2023', label: '2023' },
+                    ]}
+                  />
+                  <Select
+                    defaultValue="MTD"
+                    style={{
+                      width: 100,
+                    }}
+                    onChange={onChangePeriod}
+                    options={[
+                      { value: 'Today', label: 'Hari ini' },
+                      { value: 'MTD', label: 'Bulanan' },
+                      { value: 'YTD', label: 'Tahunan' },
+                      { value: 'All', label: 'Semua' },
+                    ]}
+                  />
+                </div>
+                <div className="py-3 h-full">
+                  <div className="w-[0.5px] h-full bg-gray-400/50" />
+                </div>
+              </>
+            )}
             <Dropdown>
               <Dropdown.Trigger>
                 <span className="inline-flex rounded-md">
