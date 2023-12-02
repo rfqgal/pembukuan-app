@@ -67,4 +67,66 @@ class BalanceHelper
 
         return (object)['before' => $balanceBefore, 'after' => $balanceAfter];
     }
+    
+    /**
+     * Balance trigger by outcome.
+     *
+     * @param integer $outcome
+     * @return object
+     */
+    public static function createOutcome(int $outcome)
+    {
+        $balance = Balance::find(1);
+        $balanceBefore = $balance->nominal;
+
+        $balanceAfter = $balanceBefore - $outcome;
+
+        $balance->nominal = $balanceAfter;
+        $balance->save();
+
+        return (object)['before' => $balanceBefore, 'after' => $balanceAfter];
+    }
+
+    /**
+     * Balance trigger by outcome.
+     *
+     * @param integer $outcome
+     * @return object
+     */
+    public static function updateOutcome(int $outcome)
+    {
+        $balance = Balance::find(1);
+        $balanceBefore = $balance->nominal;
+
+        $balanceAfter = $balanceBefore - $outcome;
+        $balanceDifference = $balanceAfter - $balanceBefore;
+
+        $balance->nominal += $balanceDifference;
+        $balance->save();
+
+        return (object)[
+            'before' => $balanceBefore,
+            'after' => $balanceAfter,
+            'difference' => $balanceDifference,
+        ];
+    }
+
+    /**
+     * Balance trigger by outcome.
+     *
+     * @param integer $outcome
+     * @return object
+     */
+    public static function deleteOutcome(int $outcome)
+    {
+        $balance = Balance::find(1);
+        $balanceBefore = $balance->nominal;
+
+        $balanceAfter = $balanceBefore + $outcome;
+
+        $balance->nominal = $balanceAfter;
+        $balance->save();
+
+        return (object)['before' => $balanceBefore, 'after' => $balanceAfter];
+    }
 }

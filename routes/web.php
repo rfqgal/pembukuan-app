@@ -37,6 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/income/api', [IncomeController::class, 'indexApi'])->name('income.index.api');
     Route::resource('income', IncomeController::class);
     
+    Route::get('/outcome/api', [OutcomeController::class, 'indexApi'])->name('outcome.index.api');
     Route::resource('outcome', OutcomeController::class);
 });
 
