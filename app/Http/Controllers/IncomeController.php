@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Response\APIResponse;
-use App\Models\Balance;
+use App\Helpers\BalanceHelper;
 use App\Models\Income;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
@@ -48,36 +48,30 @@ class IncomeController extends Controller
      */
     public function store(Request $request)
     {
-        $balance = Balance::createIncome($request->nominal);
+        try {
+            DB::beginTransaction();
+            
+            $balance = BalanceHelper::createIncome($request->nominal);
         
-        $create = Income::create([
-            'nominal' => $request->nominal,
-            'description' => $request->description,
-            'date' => $request->date,
-            'balance_before' => $balance->before,
-            'balance_after' => $balance->after,
-        ]);
+            $create = Income::create([
+                'nominal' => $request->nominal,
+                'description' => $request->description,
+                'date' => $request->date,
+                'balance_before' => $balance->before,
+                'balance_after' => $balance->after,
+            ]);
+            
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
 
-        if ($create) {
-            return APIResponse::success('Pemasukan telah berhasil dibuat!', $create);
+            return APIResponse::error('Pemasukan gagal dibuat!', [
+                'message' => $th->getMessage(),
+                'error' => $th->getTraceAsString(),
+            ], $th->getCode());
         }
-        return APIResponse::error('Pemasukan gagal dibuat!', $create);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Income $income)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Income $income)
-    {
-        //
+        
+        return APIResponse::success('Pemasukan telah berhasil dibuat!', $create);
     }
 
     /**
@@ -85,7 +79,29 @@ class IncomeController extends Controller
      */
     public function update(Request $request, Income $income)
     {
-        //
+        try {
+            DB::beginTransaction();
+
+            $nominal = $request->nominal - $income->nominal;
+            $balance = BalanceHelper::updateIncome($nominal);
+    
+            $income->nominal = $request->nominal;
+            $income->date = $request->date;
+            $income->description = $request->description;
+            $income->balance_after += $balance->difference;
+            $income->save();
+            
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            return APIResponse::error('Pemasukan gagal diubah!', [
+                'message' => $th->getMessage(),
+                'error' => $th->getTraceAsString(),
+            ]);
+        }
+
+        return APIResponse::success('Ubah pemasukan telah berhasil!', $income);
     }
 
     /**
@@ -93,6 +109,22 @@ class IncomeController extends Controller
      */
     public function destroy(Income $income)
     {
-        //
+        try {
+            DB::beginTransaction();
+
+            BalanceHelper::deleteIncome($income->nominal);
+            $income->delete();
+
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            return APIResponse::error('Pemasukan gagal dihapus!', [
+                'message' => $th->getMessage(),
+                'error' => $th->getTraceAsString(),
+            ]);
+        }
+        
+        return APIResponse::success('Hapus pemasukan telah berhasil!', $income);
     }
 }

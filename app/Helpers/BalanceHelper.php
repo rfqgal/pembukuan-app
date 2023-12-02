@@ -29,10 +29,9 @@ class BalanceHelper
      * Balance trigger by income.
      *
      * @param integer $income
-     * @param integer $id
      * @return object
      */
-    public static function updateIncome(int $income, $id)
+    public static function updateIncome(int $income)
     {
         $balance = Balance::find(1);
         $balanceBefore = $balance->nominal;
@@ -40,8 +39,8 @@ class BalanceHelper
         $balanceAfter = $balanceBefore + $income;
         $balanceDifference = $balanceAfter - $balanceBefore;
 
-        $balance->nominal = $balanceDifference;
-        // $balance->save();
+        $balance->nominal += $balanceDifference;
+        $balance->save();
 
         return (object)[
             'before' => $balanceBefore,
@@ -63,8 +62,8 @@ class BalanceHelper
 
         $balanceAfter = $balanceBefore - $income;
 
-        // $balance->nominal = $balanceAfter;
-        // $balance->save();
+        $balance->nominal = $balanceAfter;
+        $balance->save();
 
         return (object)['before' => $balanceBefore, 'after' => $balanceAfter];
     }
