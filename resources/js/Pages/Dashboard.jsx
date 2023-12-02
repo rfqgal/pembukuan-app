@@ -21,7 +21,7 @@ export default function Dashboard({ auth, statistics }) {
       <Head title="Dashboard" />
 
       <div className="grid grid-cols-3 gap-4">
-        <CardStatistic className="bg-yellow-300" value={statistics.balance} description="Saldo saat ini" />
+        <CardStatistic className="bg-blue-500" value={statistics.balance} description="Saldo saat ini" />
         <CardStatistic className="bg-green-500" value={statistics.income} description="Pemasukan bulan ini" />
         <CardStatistic className="bg-red-500" value={statistics.outcome} description="Pengeluaran bulan ini" />
       </div>
