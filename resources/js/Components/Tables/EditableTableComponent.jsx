@@ -1,23 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
-  Button, DatePicker, Form, Input, InputNumber, Popconfirm, Table,
+  Button, DatePicker, Form, Input, InputNumber, Popconfirm, Table, notification,
 } from 'antd';
 import {
   CheckOutlined, CloseOutlined, DeleteFilled, EditFilled,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
-
-const originData = [];
-
-for (let i = 0; i < 100; i += 1) {
-  const thousands = [10000, 100000];
-  originData.push({
-    key: i.toString(),
-    description: 'Contoh satu kalimat deskripsi.',
-    nominal: (Math.floor(Math.random() * 10) + 1) * thousands[Math.floor(Math.random() * 1) + 0],
-    date: '2023-11-18',
-  });
-}
+import axios from 'axios';
+import { renderNotification } from '@/Utils/ResponseHelper';
 
 function EditableCell({
   editing,
@@ -65,72 +55,111 @@ function EditableCell({
   );
 }
 
-export default function EditableTableComponent() {
+export default function EditableTableComponent({ columns, routeName, pageSize = 20 }) {
   const [form] = Form.useForm();
-  const [data, setData] = useState(originData);
+  const [data, setData] = useState();
+  const [loading, setLoading] = useState(false);
   const [editingKey, setEditingKey] = useState('');
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize,
+    },
+  });
 
-  const isEditing = (record) => record.key === editingKey;
+  const fetchData = () => {
+    setLoading(true);
+
+    const params = {
+      page: tableParams.pagination.current,
+      pageSize: tableParams.pagination.pageSize,
+      order: tableParams.order,
+      field: tableParams.field,
+    };
+    axios.get(route(`${routeName}.index.api`), { params })
+      .then(({ data: result }) => {
+        setData(result.data);
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: result.total,
+          },
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [JSON.stringify(tableParams)]);
+
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
+
+    // `dataSource` is useless since `pageSize` changed
+    if (pagination.pageSize !== tableParams.pagination?.pageSize) {
+      setData([]);
+    }
+  };
+
+  const isEditing = (record) => record.id === editingKey;
   const edit = (record) => {
     form.setFieldsValue({
       ...record,
       date: record.date ? dayjs(record.date, 'YYYY-MM-DD') : '',
     });
-    setEditingKey(record.key);
+    setEditingKey(record.id);
   };
 
   const cancel = () => {
     setEditingKey('');
   };
 
-  const save = async (key) => {
+  const save = async (id) => {
     try {
       const row = await form.validateFields();
-      const newData = [...data];
-      const index = newData.findIndex((item) => key === item.key);
 
-      if (index > -1) {
-        const item = newData[index];
-        newData.splice(index, 1, {
-          ...item,
-          ...row,
-          date: row.date ? dayjs(row.date, 'YYYY-MM-DD').format('YYYY-MM-DD') : '',
+      axios.put(route(`${routeName}.update`, { id }), {
+        ...row,
+        date: dayjs(row.date).format('YYYY-MM-DD'),
+      }).then(({ data: res }) => {
+        renderNotification(res);
+        setEditingKey('');
+        fetchData();
+      }).catch(() => {
+        notification.error({
+          message: 'Gagal',
+          description: 'Data gagal diubah!',
         });
-        setData(newData);
-        setEditingKey('');
-      } else {
-        newData.push(row);
-        setData(newData);
-        setEditingKey('');
-      }
+      });
     } catch (errInfo) {
       console.log('Validate Failed:', errInfo);
     }
   };
 
-  const handleDelete = (value) => {
-    console.log(`delete ${value}`);
+  const handleDelete = (id) => {
+    axios.delete(route(`${routeName}.destroy`, { id }))
+      .then(({ data: res }) => {
+        renderNotification(res);
+        fetchData();
+      })
+      .catch(() => {
+        notification.error({
+          message: 'Error',
+          description: 'Data gagal diubah!',
+        });
+      });
   };
 
-  const columns = [
-    {
-      title: 'Deskripsi',
-      dataIndex: 'description',
-      editable: true,
-    },
-    {
-      title: 'Nominal',
-      dataIndex: 'nominal',
-      render: (text) => text.toLocaleString('id-ID', { maximumFractionDigits: 0 }),
-      editable: true,
-      inputType: 'number',
-    },
-    {
-      title: 'Tanggal',
-      dataIndex: 'date',
-      editable: true,
-      inputType: 'date',
-    },
+  const tableColumns = [
+    ...columns,
     {
       title: '',
       dataIndex: 'operation',
@@ -141,7 +170,7 @@ export default function EditableTableComponent() {
           <div className="flex space-x-2">
             <Button
               type="primary"
-              onClick={() => save(record.key)}
+              onClick={() => save(record.id)}
               icon={<CheckOutlined />}
             />
             <Popconfirm
@@ -164,7 +193,7 @@ export default function EditableTableComponent() {
             />
             <Popconfirm
               title="Apakah Anda yakin untuk menghapus data ini?"
-              onConfirm={() => handleDelete(record.key)}
+              onConfirm={() => handleDelete(record.id)}
             >
               <Button
                 type="primary"
@@ -179,7 +208,7 @@ export default function EditableTableComponent() {
     },
   ];
 
-  const mergedColumns = columns.map((col) => {
+  const mergedColumns = tableColumns.map((col) => {
     if (!col.editable) {
       return col;
     }
@@ -207,9 +236,12 @@ export default function EditableTableComponent() {
         dataSource={data}
         columns={mergedColumns}
         rowClassName="editable-row"
+        loading={loading}
         pagination={{
           onChange: cancel,
+          ...tableParams.pagination,
         }}
+        onChange={handleTableChange}
       />
     </Form>
   );

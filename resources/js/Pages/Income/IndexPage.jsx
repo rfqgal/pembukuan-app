@@ -22,7 +22,31 @@ export default function Index({ auth }) {
             </Button>
           </Link>
         </div>
-        <EditableTableComponent />
+        <EditableTableComponent
+          routeName="income"
+          columns={[
+            {
+              title: 'Deskripsi',
+              dataIndex: 'description',
+              editable: true,
+            },
+            {
+              title: 'Nominal',
+              dataIndex: 'nominal',
+              render: (text) => text.toLocaleString('id-ID', { maximumFractionDigits: 0 }),
+              editable: true,
+              sorter: true,
+              inputType: 'number',
+            },
+            {
+              title: 'Tanggal',
+              dataIndex: 'date',
+              editable: true,
+              sorter: true,
+              inputType: 'date',
+            },
+          ]}
+        />
       </CardSubLayout>
     </AuthenticatedLayout>
   );
