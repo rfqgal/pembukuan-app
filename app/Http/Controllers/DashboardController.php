@@ -52,6 +52,9 @@ class DashboardController extends Controller
                     : substr($request->order, 0, 4);
                 $query->orderBy($request->field, $order);
             })
+            ->when(!$request->has('order', 'field'), function (Builder $query) use ($request) {
+                $query->orderByDesc('date');
+            })
             ->paginate($request->pageSize);
     }
 
@@ -69,6 +72,9 @@ class DashboardController extends Controller
                     ? substr($request->order, 0, 3)
                     : substr($request->order, 0, 4);
                 $query->orderBy($request->field, $order);
+            })
+            ->when(!$request->has('order', 'field'), function (Builder $query) use ($request) {
+                $query->orderByDesc('date');
             })
             ->paginate($request->pageSize);
     }
