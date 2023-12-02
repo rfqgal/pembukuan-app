@@ -43,6 +43,7 @@ export default function AuthenticatedLayout({ user, children, hideFilter }) {
   return (
     <Layout>
       <Sider
+        className="!sticky !top-0 left-0 h-screen z-10 shadow"
         collapsible
         trigger={null}
         collapsed={collapsed}
@@ -60,7 +61,7 @@ export default function AuthenticatedLayout({ user, children, hideFilter }) {
       </Sider>
       <Layout>
         <Header
-          className="flex justify-between"
+          className="sticky top-0 z-10 shadow flex justify-between"
           style={{
             padding: 0,
             background: colorBgContainer,
