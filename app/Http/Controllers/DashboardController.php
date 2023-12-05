@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\FilterHelper;
 use App\Models\Balance;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
@@ -18,13 +19,17 @@ class DashboardController extends Controller
      */
     public function index(Request $request)
     {
-        // dd($this->incomeApi($request));
-        
         $income = DB::table('incomes')
             ->selectRaw('SUM(nominal) AS total')
+            ->when(strtolower($request->period) !== 'all', function (Builder $query) use ($request) {
+                $query->whereBetween('date', FilterHelper::setTimeBetween($request));
+            })
             ->first();
         $outcome = DB::table('outcomes')
             ->selectRaw('SUM(nominal) AS total')
+            ->when(strtolower($request->period) !== 'all', function (Builder $query) use ($request) {
+                $query->whereBetween('date', FilterHelper::setTimeBetween($request));
+            })
             ->first();
         $balance = Balance::find(1);
         
@@ -46,6 +51,9 @@ class DashboardController extends Controller
     public function incomeApi(Request $request)
     {
         return DB::table('incomes')
+            ->when(strtolower($request->period) !== 'all', function (Builder $query) use ($request) {
+                $query->whereBetween('date', FilterHelper::setTimeBetween($request));
+            })
             ->when($request->has('order', 'field'), function (Builder $query) use ($request) {
                 $order = substr($request->order, 0, 3) === 'asc'
                     ? substr($request->order, 0, 3)
@@ -67,6 +75,9 @@ class DashboardController extends Controller
     public function outcomeApi(Request $request)
     {
         return DB::table('outcomes')
+            ->when(strtolower($request->period) !== 'all', function (Builder $query) use ($request) {
+                $query->whereBetween('date', FilterHelper::setTimeBetween($request));
+            })
             ->when($request->has('order', 'field'), function (Builder $query) use ($request) {
                 $order = substr($request->order, 0, 3) === 'asc'
                     ? substr($request->order, 0, 3)

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Helpers\FilterHelper;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tightenco\Ziggy\Ziggy;
@@ -39,6 +40,10 @@ class HandleInertiaRequests extends Middleware
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
+            'filters' => [
+                'years' => FilterHelper::getYears(),
+                'periods' => FilterHelper::getPeriods(),
+            ]
         ];
     }
 }

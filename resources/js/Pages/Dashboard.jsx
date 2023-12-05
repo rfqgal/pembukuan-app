@@ -16,14 +16,44 @@ export default function Dashboard({ auth, statistics }) {
     { title: 'Tanggal', dataIndex: 'date', sorter: true },
   ];
 
+  const urlParams = new URLSearchParams(window.location.search);
+  const filterUrl = {
+    year: urlParams.get('year') || null,
+    period: urlParams.get('period') || null,
+  };
+
+  let period;
+
+  switch (filterUrl.period) {
+    case 'YTD':
+      period = 'tahun ini';
+      break;
+    case 'MTD':
+      period = 'bulan ini';
+      break;
+    case 'Today':
+      period = 'hari ini';
+      break;
+    case 'All':
+      period = 'keseluruhan';
+      break;
+
+    default:
+      break;
+  }
+
+  if (filterUrl.year) {
+    period = `tahun ${filterUrl.year}`;
+  }
+
   return (
     <AuthenticatedLayout user={auth.user}>
       <Head title="Dashboard" />
 
       <div className="grid grid-cols-3 gap-4">
         <CardStatistic className="bg-blue-500" value={statistics.balance} description="Saldo saat ini" />
-        <CardStatistic className="bg-green-500" value={statistics.income} description="Pemasukan bulan ini" />
-        <CardStatistic className="bg-red-500" value={statistics.outcome} description="Pengeluaran bulan ini" />
+        <CardStatistic className="bg-green-500" value={statistics.income} description={`Pemasukan ${period}`} />
+        <CardStatistic className="bg-red-500" value={statistics.outcome} description={`Pengeluaran ${period}`} />
       </div>
 
       <div className="grid grid-cols-2 gap-4">

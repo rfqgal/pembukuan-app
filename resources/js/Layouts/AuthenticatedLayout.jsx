@@ -9,7 +9,7 @@ import {
   MenuUnfoldOutlined,
   UpCircleOutlined,
 } from '@ant-design/icons';
-import { Link } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 
@@ -19,11 +19,29 @@ export default function AuthenticatedLayout({ user, children, hideFilter }) {
   const [collapsed, setCollapsed] = useState(false);
   const { token: { colorBgContainer } } = theme.useToken();
 
+  const { filters } = usePage().props;
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const filterUrl = {
+    year: urlParams.get('year') || null,
+    period: urlParams.get('period') || null,
+  };
+
   const onChangeYear = (value) => {
-    console.log(`selected ${value}`);
+    const formData = {
+      year: value,
+      period: undefined,
+    };
+    Object.keys(formData).forEach((k) => !formData[k] && delete formData[k]);
+    router.get(route().current(), formData);
   };
   const onChangePeriod = (value) => {
-    console.log(`selected ${value}`);
+    const formData = {
+      year: undefined,
+      period: value,
+    };
+    Object.keys(formData).forEach((k) => !formData[k] && delete formData[k]);
+    router.get(route().current(), formData);
   };
 
   const navbarMenu = [{
@@ -82,28 +100,20 @@ export default function AuthenticatedLayout({ user, children, hideFilter }) {
               <>
                 <div className="flex space-x-2">
                   <Select
-                    defaultValue="2023"
+                    defaultValue={filterUrl.year || filters.years[0].value}
                     style={{
                       width: 80,
                     }}
                     onChange={onChangeYear}
-                    options={[
-                      { value: '2022', label: '2022' },
-                      { value: '2023', label: '2023' },
-                    ]}
+                    options={filters.years}
                   />
                   <Select
-                    defaultValue="MTD"
+                    defaultValue={filterUrl.period || 'MTD'}
                     style={{
                       width: 100,
                     }}
                     onChange={onChangePeriod}
-                    options={[
-                      { value: 'Today', label: 'Hari ini' },
-                      { value: 'MTD', label: 'Bulanan' },
-                      { value: 'YTD', label: 'Tahunan' },
-                      { value: 'All', label: 'Semua' },
-                    ]}
+                    options={filters.periods}
                   />
                 </div>
                 <div className="py-3 h-full">
