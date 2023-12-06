@@ -117,7 +117,8 @@ export default function EditableTableComponent({ columns, routeName, pageSize = 
   };
 
   const isEditing = (record) => record.id === editingKey;
-  const edit = (record) => {
+  const edit = (e, record) => {
+    e.preventDefault();
     form.setFieldsValue({
       ...record,
       date: record.date ? dayjs(record.date, 'YYYY-MM-DD') : '',
@@ -129,7 +130,9 @@ export default function EditableTableComponent({ columns, routeName, pageSize = 
     setEditingKey('');
   };
 
-  const save = async (id) => {
+  const save = async (e, id) => {
+    e.preventDefault();
+
     try {
       const row = await form.validateFields();
 
@@ -151,7 +154,9 @@ export default function EditableTableComponent({ columns, routeName, pageSize = 
     }
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = (e, id) => {
+    e.preventDefault();
+
     axios.delete(route(`${routeName}.destroy`, { id }))
       .then(({ data: res }) => {
         renderNotification(res);
@@ -177,7 +182,7 @@ export default function EditableTableComponent({ columns, routeName, pageSize = 
           <div className="flex space-x-2">
             <Button
               type="primary"
-              onClick={() => save(record.id)}
+              onClick={(e) => save(e, record.id)}
               icon={<CheckOutlined />}
             />
             <Popconfirm
@@ -195,12 +200,12 @@ export default function EditableTableComponent({ columns, routeName, pageSize = 
             <Button
               type="primary"
               disabled={editingKey !== ''}
-              onClick={() => edit(record)}
+              onClick={(e) => edit(e, record)}
               icon={<EditFilled />}
             />
             <Popconfirm
               title="Apakah Anda yakin untuk menghapus data ini?"
-              onConfirm={() => handleDelete(record.id)}
+              onConfirm={(e) => handleDelete(e, record.id)}
             >
               <Button
                 type="primary"
