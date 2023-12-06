@@ -1,18 +1,21 @@
-import { Head, useForm } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import {
   Button,
   DatePicker, Form, Input, InputNumber, notification,
 } from 'antd';
 import dayjs from 'dayjs';
 import axios from 'axios';
+import { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import CardSubLayout from '@/Layouts/SubLayouts/CardSubLayout';
 import TableComponent from '@/Components/Tables/TableComponent';
 
 export default function Create({ auth }) {
-  const inertiaForm = useForm();
+  const [loading, setLoading] = useState(false);
 
   const onFinish = async (values) => {
+    setLoading(true);
+
     const form = {
       ...values,
       date: dayjs(values.date).format('YYYY-MM-DD'),
@@ -27,7 +30,7 @@ export default function Create({ auth }) {
         });
       })
       .finally(() => {
-        inertiaForm.get(route('income.create'));
+        router.get(route('income.create'));
       });
   };
   const onFinishFailed = (errorInfo) => {
@@ -40,7 +43,13 @@ export default function Create({ auth }) {
 
       <div className="flex space-x-4">
         <CardSubLayout className="basis-3/5 h-fit" heading="Buat Pemasukan Baru">
-          <Form layout="vertical" name="income" onFinish={onFinish} onFinishFailed={onFinishFailed}>
+          <Form
+            layout="vertical"
+            name="income"
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
+            onSubmit={(e) => e.preventDefault()}
+          >
             <div className="flex space-x-2">
               <Form.Item
                 className="grow"
@@ -68,7 +77,7 @@ export default function Create({ auth }) {
               <Input.TextArea rows={4} allowClear />
             </Form.Item>
             <Form.Item>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" loading={loading}>
                 Simpan
               </Button>
             </Form.Item>
