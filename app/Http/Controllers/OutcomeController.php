@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\BalanceHelper;
+use App\Helpers\FilterHelper;
 use App\Http\Response\APIResponse;
 use App\Models\Outcome;
 use Illuminate\Database\Query\Builder;
@@ -22,7 +23,10 @@ class OutcomeController extends Controller
 
     public function indexApi(Request $request)
     {
-        return DB::table('outcomes')
+            return DB::table('outcomes')
+            ->when(strtolower($request->period) !== 'all', function (Builder $query) use ($request) {
+                $query->whereBetween('date', FilterHelper::setTimeBetween($request));
+            })
             ->when($request->has('order', 'field'), function (Builder $query) use ($request) {
                 $order = substr($request->order, 0, 3) === 'asc'
                     ? substr($request->order, 0, 3)

@@ -33,7 +33,7 @@ export default function AuthenticatedLayout({ user, children, hideFilter }) {
       period: undefined,
     };
     Object.keys(formData).forEach((k) => !formData[k] && delete formData[k]);
-    router.get(route().current(), formData);
+    router.get(route(route().current()), formData);
   };
   const onChangePeriod = (value) => {
     const formData = {
@@ -41,7 +41,7 @@ export default function AuthenticatedLayout({ user, children, hideFilter }) {
       period: value,
     };
     Object.keys(formData).forEach((k) => !formData[k] && delete formData[k]);
-    router.get(route().current(), formData);
+    router.get(route(route().current()), formData);
   };
 
   const navbarMenu = [{

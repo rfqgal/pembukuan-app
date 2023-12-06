@@ -56,6 +56,12 @@ function EditableCell({
 }
 
 export default function EditableTableComponent({ columns, routeName, pageSize = 20 }) {
+  const urlParams = new URLSearchParams(window.location.search);
+  const filterUrl = {
+    year: urlParams.get('year') || null,
+    period: urlParams.get('period') || null,
+  };
+
   const [form] = Form.useForm();
   const [data, setData] = useState();
   const [loading, setLoading] = useState(false);
@@ -75,6 +81,7 @@ export default function EditableTableComponent({ columns, routeName, pageSize = 
       pageSize: tableParams.pagination.pageSize,
       order: tableParams.order,
       field: tableParams.field,
+      ...filterUrl,
     };
     axios.get(route(`${routeName}.index.api`), { params })
       .then(({ data: result }) => {

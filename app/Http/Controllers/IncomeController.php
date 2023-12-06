@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\FilterHelper;
 use App\Http\Response\APIResponse;
 use App\Helpers\BalanceHelper;
 use App\Models\Income;
@@ -23,6 +24,9 @@ class IncomeController extends Controller
     public function indexApi(Request $request)
     {
         return DB::table('incomes')
+            ->when(strtolower($request->period) !== 'all', function (Builder $query) use ($request) {
+                $query->whereBetween('date', FilterHelper::setTimeBetween($request));
+            })
             ->when($request->has('order', 'field'), function (Builder $query) use ($request) {
                 $order = substr($request->order, 0, 3) === 'asc'
                     ? substr($request->order, 0, 3)
