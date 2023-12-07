@@ -1,40 +1,58 @@
-import { Head, router } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import {
   Button,
   DatePicker, Form, Input, InputNumber, notification,
 } from 'antd';
-import dayjs from 'dayjs';
-import axios from 'axios';
 import { useState } from 'react';
+import axios from 'axios';
+import dayjs from 'dayjs';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import CardSubLayout from '@/Layouts/SubLayouts/CardSubLayout';
 import TableComponent from '@/Components/Tables/TableComponent';
 
 export default function Create({ auth }) {
+  const [form] = Form.useForm();
+  const [reload, setReload] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const onFinish = async (values) => {
+  const onFinish = async () => {
+    const data = await form.validateFields();
     setLoading(true);
 
-    const form = {
-      ...values,
-      date: dayjs(values.date).format('YYYY-MM-DD'),
-    };
-
-    axios.post(route('income.store'), form)
+    axios
+      .post(route('income.store'), {
+        ...data,
+        date: dayjs(data.date).format('YYYY-MM-DD'),
+      })
       .then(({ data: res }) => {
         notification.success({
-          message: res.success ? 'Sukses' : 'Gagal',
+          message: 'Sukses',
           description: res.message,
           placement: 'bottomRight',
         });
       })
+      .catch((err) => {
+        notification.error({
+          message: 'Gagal',
+          description: err?.response?.data?.message,
+          placement: 'bottomRight',
+        });
+      })
       .finally(() => {
-        router.get(route('income.create'));
+        form.resetFields();
+        setLoading(false);
+        setReload(reload + 1);
       });
   };
-  const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
+
+  const onFinishFailed = ({ errorFields }) => {
+    errorFields.forEach((element) => {
+      notification.error({
+        message: 'Gagal',
+        description: element.errors[0],
+        placement: 'bottomRight',
+      });
+    });
   };
 
   return (
@@ -44,6 +62,7 @@ export default function Create({ auth }) {
       <div className="flex space-x-4">
         <CardSubLayout className="basis-3/5 h-fit" heading="Buat Pemasukan Baru">
           <Form
+            form={form}
             layout="vertical"
             name="income"
             onFinish={onFinish}
@@ -55,6 +74,8 @@ export default function Create({ auth }) {
                 className="grow"
                 label="Nominal"
                 name="nominal"
+                rules={[{ required: true, message: 'Nominal harus diisi.' }]}
+
               >
                 <InputNumber
                   className="w-full"
@@ -66,18 +87,30 @@ export default function Create({ auth }) {
               <Form.Item
                 label="Tanggal"
                 name="date"
+                rules={[{ required: true, message: 'Tanggal harus diisi.' }]}
+
               >
-                <DatePicker format="DD/MM/YYYY" />
+                <DatePicker
+                  format="DD/MM/YYYY"
+                />
               </Form.Item>
             </div>
             <Form.Item
               label="Deskripsi"
               name="description"
+              rules={[{ required: true, message: 'Deskripsi harus diisi.' }]}
             >
-              <Input.TextArea rows={4} allowClear />
+              <Input.TextArea
+                rows={4}
+                allowClear
+              />
             </Form.Item>
-            <Form.Item>
-              <Button type="primary" htmlType="submit" loading={loading}>
+            <Form.Item className="pt-4">
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={loading}
+              >
                 Simpan
               </Button>
             </Form.Item>
@@ -97,6 +130,7 @@ export default function Create({ auth }) {
               { title: 'Tanggal', dataIndex: 'date', sorter: true },
             ]}
             pageSize={5}
+            reload={reload}
           />
         </CardSubLayout>
       </div>
