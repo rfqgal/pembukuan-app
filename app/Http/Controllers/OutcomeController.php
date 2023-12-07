@@ -72,7 +72,7 @@ class OutcomeController extends Controller
             return APIResponse::error('Pengeluaran gagal dibuat!', [
                 'message' => $th->getMessage(),
                 'error' => $th->getTraceAsString(),
-            ], $th->getCode());
+            ]);
         }
         
         return APIResponse::success('Pengeluaran telah berhasil dibuat!', $create);

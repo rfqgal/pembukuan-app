@@ -72,7 +72,7 @@ class IncomeController extends Controller
             return APIResponse::error('Pemasukan gagal dibuat!', [
                 'message' => $th->getMessage(),
                 'error' => $th->getTraceAsString(),
-            ], $th->getCode());
+            ]);
         }
         
         return APIResponse::success('Pemasukan telah berhasil dibuat!', $create);
