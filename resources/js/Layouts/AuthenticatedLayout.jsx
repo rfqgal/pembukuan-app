@@ -3,11 +3,11 @@ import {
   Layout, Menu, Button, theme, Select,
 } from 'antd';
 import {
-  DownCircleOutlined,
   HomeOutlined,
+  LoginOutlined,
+  LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  UpCircleOutlined,
 } from '@ant-design/icons';
 import { Link, router, usePage } from '@inertiajs/react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
@@ -50,11 +50,11 @@ export default function AuthenticatedLayout({ user, children, hideFilter }) {
     label: <Link href={route('dashboard')}>Dashboard</Link>,
   }, {
     key: 'income',
-    icon: <DownCircleOutlined />,
+    icon: <LoginOutlined />,
     label: <Link href={route('income.index')}>Pemasukan</Link>,
   }, {
     key: 'outcome',
-    icon: <UpCircleOutlined />,
+    icon: <LogoutOutlined />,
     label: <Link href={route('outcome.index')}>Pengeluaran</Link>,
   }];
 
