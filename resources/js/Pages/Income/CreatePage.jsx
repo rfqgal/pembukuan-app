@@ -96,6 +96,7 @@ export default function Create({ auth }) {
               </Form.Item>
             </div>
             <Form.Item
+              className="pt-4"
               label="Deskripsi"
               name="description"
               rules={[{ required: true, message: 'Deskripsi harus diisi.' }]}
