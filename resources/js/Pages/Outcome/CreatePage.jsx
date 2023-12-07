@@ -118,7 +118,7 @@ export default function Create({ auth }) {
         </CardSubLayout>
         <CardSubLayout className="basis-2/5" heading="Pengeluaran Terbaru">
           <TableComponent
-            route={route('outcome.index.api')}
+            route={route('outcome.create.api')}
             columns={[
               { title: 'Deskripsi', dataIndex: 'description', width: '45%' },
               {

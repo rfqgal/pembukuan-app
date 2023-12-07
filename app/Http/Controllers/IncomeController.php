@@ -21,6 +21,12 @@ class IncomeController extends Controller
         return Inertia::render('Income/IndexPage');
     }
 
+    /**
+     * Serve the API for Index page's table.
+     *
+     * @param Request $request
+     * @return \Illuminate\Pagination\LengthAwarePaginator
+     */
     public function indexApi(Request $request)
     {
         return DB::table('incomes')
@@ -45,6 +51,27 @@ class IncomeController extends Controller
     public function create(Request $request)
     {
         return Inertia::render('Income/CreatePage');
+    }
+
+    /**
+     * Serve the API for Create page's table.
+     *
+     * @param Request $request
+     * @return \Illuminate\Pagination\LengthAwarePaginator
+     */
+    public function createApi(Request $request)
+    {
+        return DB::table('incomes')
+            ->when($request->has('order', 'field'), function (Builder $query) use ($request) {
+                $order = substr($request->order, 0, 3) === 'asc'
+                    ? substr($request->order, 0, 3)
+                    : substr($request->order, 0, 4);
+                $query->orderBy($request->field, $order);
+            })
+            ->when(!$request->has('order', 'field'), function (Builder $query) use ($request) {
+                $query->orderByDesc('created_at');
+            })
+            ->paginate($request->pageSize);
     }
 
     /**
