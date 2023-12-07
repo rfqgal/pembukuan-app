@@ -18,6 +18,8 @@ export default function TableComponent({
       current: 1,
       pageSize,
     },
+    order: columns.find((column) => column.defaultSortOrder)?.defaultSortOrder,
+    field: columns.find((column) => column.defaultSortOrder)?.dataIndex,
   });
 
   const fetchData = () => {

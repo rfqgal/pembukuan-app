@@ -61,7 +61,7 @@ class DashboardController extends Controller
                 $query->orderBy($request->field, $order);
             })
             ->when(!$request->has('order', 'field'), function (Builder $query) use ($request) {
-                $query->orderByDesc('date');
+                $query->orderByDesc('created_at');
             })
             ->paginate($request->pageSize);
     }
@@ -85,7 +85,7 @@ class DashboardController extends Controller
                 $query->orderBy($request->field, $order);
             })
             ->when(!$request->has('order', 'field'), function (Builder $query) use ($request) {
-                $query->orderByDesc('date');
+                $query->orderByDesc('created_at');
             })
             ->paginate($request->pageSize);
     }

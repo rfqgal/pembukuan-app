@@ -13,7 +13,12 @@ export default function Dashboard({ auth, statistics }) {
       render: (text) => text.toLocaleString('id-ID', { maximumFractionDigits: 0 }),
       sorter: true,
     },
-    { title: 'Tanggal', dataIndex: 'date', sorter: true },
+    {
+      title: 'Tanggal',
+      dataIndex: 'date',
+      sorter: true,
+      defaultSortOrder: 'descend',
+    },
   ];
 
   const urlParams = new URLSearchParams(window.location.search);
