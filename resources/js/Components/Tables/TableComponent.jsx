@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 import { Table } from 'antd';
 import axios from 'axios';
 
-export default function TableComponent({ columns, route, pageSize = 20 }) {
+export default function TableComponent({
+  columns, route, pageSize = 20, reload = false,
+}) {
   const urlParams = new URLSearchParams(window.location.search);
   const filterUrl = {
     year: urlParams.get('year') || null,
@@ -28,9 +30,11 @@ export default function TableComponent({ columns, route, pageSize = 20 }) {
       field: tableParams.field,
       ...filterUrl,
     };
+
     axios.get(route, { params })
       .then(({ data: result }) => {
         setData(result.data);
+        setLoading(false);
         setLoading(false);
         setTableParams({
           ...tableParams,
@@ -44,7 +48,8 @@ export default function TableComponent({ columns, route, pageSize = 20 }) {
 
   useEffect(() => {
     fetchData();
-  }, [JSON.stringify(tableParams)]);
+  }, [JSON.stringify(tableParams), reload]);
+
   const handleTableChange = (pagination, filters, sorter) => {
     setTableParams({
       pagination,
