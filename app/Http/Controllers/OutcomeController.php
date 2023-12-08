@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\OutcomesExport;
 use App\Helpers\BalanceHelper;
 use App\Helpers\FilterHelper;
 use App\Http\Response\APIResponse;
@@ -50,6 +51,20 @@ class OutcomeController extends Controller
         });
             
         return $outcomes;
+    }
+
+    /**
+     * Handle export of the datasource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function export(Request $request)
+    {
+        $fileName = 'pengeluaran-' . date('d-m-Y') . '.' . $request->type;
+        $data = (object)['request' => $request];
+        
+        return (new OutcomesExport($data))->download($fileName);
     }
 
     /**

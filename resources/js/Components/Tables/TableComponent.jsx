@@ -66,6 +66,7 @@ export default function TableComponent({
   };
   return (
     <Table
+      bordered
       columns={columns}
       rowKey={(record) => record.id}
       dataSource={data}
