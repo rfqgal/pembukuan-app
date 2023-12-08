@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\IncomesExport;
 use App\Helpers\FilterHelper;
 use App\Http\Response\APIResponse;
 use App\Helpers\BalanceHelper;
@@ -43,6 +44,20 @@ class IncomeController extends Controller
                 $query->orderByDesc('created_at');
             })
             ->paginate($request->pageSize);
+    }
+
+    /**
+     * Handle export of the datasource.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function export(Request $request)
+    {
+        $fileName = 'pemasukan-' . date('d-m-Y') . '.' . $request->type;
+        $data = (object)['request' => $request];
+        
+        return (new IncomesExport($data))->download($fileName);
     }
 
     /**

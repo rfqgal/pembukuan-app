@@ -1,8 +1,10 @@
 import { Head } from '@inertiajs/react';
+import { Typography } from 'antd';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import CardStatistic from '@/Components/Charts/CardStatistic';
 import CardSubLayout from '@/Layouts/SubLayouts/CardSubLayout';
 import TableComponent from '@/Components/Tables/TableComponent';
+import ExportButton from '@/Components/ExportButton';
 
 export default function Dashboard({ auth, statistics }) {
   const columns = [
@@ -62,14 +64,22 @@ export default function Dashboard({ auth, statistics }) {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <CardSubLayout heading="Pemasukan">
+        <CardSubLayout>
+          <div className="flex justify-between">
+            <Typography.Title level={3}>Pemasukan</Typography.Title>
+            <ExportButton routeName="income.export" />
+          </div>
           <TableComponent
             route={route('dashboard.api.income')}
             columns={columns}
             pageSize={7}
           />
         </CardSubLayout>
-        <CardSubLayout heading="Pengeluaran">
+        <CardSubLayout>
+          <div className="flex justify-between">
+            <Typography.Title level={3}>Pemasukan</Typography.Title>
+            <ExportButton routeName="outcome.export" />
+          </div>
           <TableComponent
             route={route('dashboard.api.outcome')}
             columns={columns}
