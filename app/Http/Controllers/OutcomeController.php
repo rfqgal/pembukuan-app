@@ -29,7 +29,7 @@ class OutcomeController extends Controller
      */
     public function indexApi(Request $request)
     {
-            return DB::table('outcomes')
+        $outcomes = DB::table('outcomes')
             ->when(strtolower($request->period) !== 'all', function (Builder $query) use ($request) {
                 $query->whereBetween('date', FilterHelper::setTimeBetween($request));
             })
@@ -43,6 +43,13 @@ class OutcomeController extends Controller
                 $query->orderByDesc('created_at');
             })
             ->paginate($request->pageSize);
+
+        $outcomes->map(function ($item) {
+            $item->key = $item->id;
+            $item->expandable = true;
+        });
+            
+        return $outcomes;
     }
 
     /**

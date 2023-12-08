@@ -29,7 +29,7 @@ class IncomeController extends Controller
      */
     public function indexApi(Request $request)
     {
-        return DB::table('incomes')
+        $incomes = DB::table('incomes')
             ->when(strtolower($request->period) !== 'all', function (Builder $query) use ($request) {
                 $query->whereBetween('date', FilterHelper::setTimeBetween($request));
             })
@@ -43,6 +43,13 @@ class IncomeController extends Controller
                 $query->orderByDesc('created_at');
             })
             ->paginate($request->pageSize);
+
+        $incomes->map(function ($item) {
+            $item->key = $item->id;
+            $item->expandable = true;
+        });
+            
+        return $incomes;
     }
 
     /**
