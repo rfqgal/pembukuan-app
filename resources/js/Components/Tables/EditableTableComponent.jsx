@@ -55,6 +55,28 @@ function EditableCell({
   );
 }
 
+function ExpandableRow({ created_at: createdAt, updated_at: updatedAt }) {
+  const createdDate = dayjs(createdAt).format('DD/MM/YYYY HH:mm:ss');
+  const updatedDate = updatedAt !== createdAt
+    ? dayjs(updatedAt).format('DD/MM/YYYY HH:mm:ss')
+    : '-';
+
+  return (
+    <>
+      <p>
+        Tanggal dibuat:
+        {' '}
+        {createdDate}
+      </p>
+      <p>
+        Tanggal diubah:
+        {' '}
+        {updatedDate}
+      </p>
+    </>
+  );
+}
+
 export default function EditableTableComponent({ columns, routeName, pageSize = 20 }) {
   const urlParams = new URLSearchParams(window.location.search);
   const filterUrl = {
@@ -254,6 +276,10 @@ export default function EditableTableComponent({ columns, routeName, pageSize = 
         pagination={{
           onChange: cancel,
           ...tableParams.pagination,
+        }}
+        expandable={{
+          expandedRowRender: (record) => ExpandableRow(record),
+          rowExpandable: (record) => record.expandable,
         }}
         onChange={handleTableChange}
       />
