@@ -13,6 +13,7 @@ use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
@@ -101,8 +102,18 @@ class OutcomesExport implements FromQuery, ShouldAutoSize, WithColumnFormatting,
     public function styles(Worksheet $sheet)
     {
         return [
-            // Style the first row as bold text.
-            1    => ['font' => ['bold' => true]],
+            1 => ['font' => ['bold' => true]],
+            
+            'B' => [
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                ]
+            ],
+            'C' => [
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                ]
+            ],
         ];
     }
 }
