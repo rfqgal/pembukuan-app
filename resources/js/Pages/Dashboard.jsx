@@ -8,7 +8,7 @@ import ExportButton from '@/Components/ExportButton';
 
 export default function Dashboard({ auth, statistics }) {
   const columns = [
-    { title: 'Deskripsi', dataIndex: 'description', width: '60%' },
+    { title: 'Deskripsi', dataIndex: 'description', width: '55%' },
     {
       title: 'Nominal',
       dataIndex: 'nominal',
@@ -18,6 +18,7 @@ export default function Dashboard({ auth, statistics }) {
     {
       title: 'Tanggal',
       dataIndex: 'date',
+      width: '22%',
       sorter: true,
       defaultSortOrder: 'descend',
     },
