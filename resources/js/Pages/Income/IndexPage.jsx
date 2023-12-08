@@ -4,6 +4,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import CardSubLayout from '@/Layouts/SubLayouts/CardSubLayout';
 import EditableTableComponent from '@/Components/Tables/EditableTableComponent';
+import ExportButton from '@/Components/ExportButton';
 
 export default function Index({ auth }) {
   return (
@@ -13,14 +14,17 @@ export default function Index({ auth }) {
       <CardSubLayout>
         <div className="flex justify-between">
           <Typography.Title level={3}>Rincian Pemasukan</Typography.Title>
-          <Link href={route('income.create')}>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-            >
-              Buat pemasukan baru
-            </Button>
-          </Link>
+          <div className="flex space-x-3">
+            <ExportButton routeName="income.export" />
+            <Link href={route('income.create')}>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+              >
+                Buat pemasukan baru
+              </Button>
+            </Link>
+          </div>
         </div>
         <EditableTableComponent
           routeName="income"
