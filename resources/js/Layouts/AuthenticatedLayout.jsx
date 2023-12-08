@@ -47,15 +47,15 @@ export default function AuthenticatedLayout({ user, children, hideFilter }) {
   const navbarMenu = [{
     key: 'dashboard',
     icon: <HomeOutlined />,
-    label: <Link href={route('dashboard')}>Dashboard</Link>,
+    label: <Link href={route('dashboard', filterUrl)}>Dashboard</Link>,
   }, {
     key: 'income',
     icon: <LoginOutlined />,
-    label: <Link href={route('income.index')}>Pemasukan</Link>,
+    label: <Link href={route('income.index', filterUrl)}>Pemasukan</Link>,
   }, {
     key: 'outcome',
     icon: <LogoutOutlined />,
-    label: <Link href={route('outcome.index')}>Pengeluaran</Link>,
+    label: <Link href={route('outcome.index', filterUrl)}>Pengeluaran</Link>,
   }];
 
   return (
