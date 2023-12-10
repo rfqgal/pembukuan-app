@@ -28,8 +28,8 @@ class DatabaseSeeder extends Seeder
             'nominal' => 0,
         ]);
 
-        $this->call([
-            IncomeOutcomeSeeder::class,
-        ]);
+        // $this->call([
+        //     IncomeOutcomeSeeder::class,
+        // ]);
     }
 }
