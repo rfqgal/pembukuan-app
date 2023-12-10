@@ -1,125 +1,177 @@
 import { useState } from 'react';
+import {
+  Layout, Menu, Button, theme, Select,
+} from 'antd';
+import {
+  HomeOutlined,
+  LoginOutlined,
+  LogoutOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+} from '@ant-design/icons';
+import { Link, router, usePage } from '@inertiajs/react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
-import NavLink from '@/Components/NavLink';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Link } from '@inertiajs/react';
 
-export default function Authenticated({ user, header, children }) {
-    const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
+export default function AuthenticatedLayout({ user, children, hideFilter }) {
+  const { Header, Sider, Content } = Layout;
 
-    return (
-        <div className="min-h-screen bg-gray-100">
-            <nav className="bg-white border-b border-gray-100">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between h-16">
-                        <div className="flex">
-                            <div className="shrink-0 flex items-center">
-                                <Link href="/">
-                                    <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" />
-                                </Link>
-                            </div>
+  const [collapsed, setCollapsed] = useState(false);
+  const { token: { colorBgContainer } } = theme.useToken();
 
-                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink href={route('dashboard')} active={route().current('dashboard')}>
-                                    Dashboard
-                                </NavLink>
-                            </div>
-                        </div>
+  const { filters } = usePage().props;
 
-                        <div className="hidden sm:flex sm:items-center sm:ms-6">
-                            <div className="ms-3 relative">
-                                <Dropdown>
-                                    <Dropdown.Trigger>
-                                        <span className="inline-flex rounded-md">
-                                            <button
-                                                type="button"
-                                                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
-                                            >
-                                                {user.name}
+  const urlParams = new URLSearchParams(window.location.search);
+  const filterUrl = {
+    year: urlParams.get('year') || null,
+    period: urlParams.get('period') || null,
+  };
 
-                                                <svg
-                                                    className="ms-2 -me-0.5 h-4 w-4"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                >
-                                                    <path
-                                                        fillRule="evenodd"
-                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                        clipRule="evenodd"
-                                                    />
-                                                </svg>
-                                            </button>
-                                        </span>
-                                    </Dropdown.Trigger>
+  const onChangeYear = (value) => {
+    const formData = {
+      year: value,
+      period: undefined,
+    };
+    Object.keys(formData).forEach((k) => !formData[k] && delete formData[k]);
+    router.get(route(route().current()), formData);
+  };
+  const onChangePeriod = (value) => {
+    const formData = {
+      year: undefined,
+      period: value,
+    };
+    Object.keys(formData).forEach((k) => !formData[k] && delete formData[k]);
+    router.get(route(route().current()), formData);
+  };
 
-                                    <Dropdown.Content>
-                                        <Dropdown.Link href={route('profile.edit')}>Profile</Dropdown.Link>
-                                        <Dropdown.Link href={route('logout')} method="post" as="button">
-                                            Log Out
-                                        </Dropdown.Link>
-                                    </Dropdown.Content>
-                                </Dropdown>
-                            </div>
-                        </div>
+  const navbarMenu = [{
+    key: 'dashboard',
+    icon: <HomeOutlined />,
+    label: <Link href={route('dashboard', filterUrl)}>Dashboard</Link>,
+  }, {
+    key: 'income',
+    icon: <LoginOutlined />,
+    label: <Link href={route('income.index', filterUrl)}>Pemasukan</Link>,
+  }, {
+    key: 'outcome',
+    icon: <LogoutOutlined />,
+    label: <Link href={route('outcome.index', filterUrl)}>Pengeluaran</Link>,
+  }];
 
-                        <div className="-me-2 flex items-center sm:hidden">
-                            <button
-                                onClick={() => setShowingNavigationDropdown((previousState) => !previousState)}
-                                className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out"
-                            >
-                                <svg className="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                                    <path
-                                        className={!showingNavigationDropdown ? 'inline-flex' : 'hidden'}
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M4 6h16M4 12h16M4 18h16"
-                                    />
-                                    <path
-                                        className={showingNavigationDropdown ? 'inline-flex' : 'hidden'}
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M6 18L18 6M6 6l12 12"
-                                    />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div className={(showingNavigationDropdown ? 'block' : 'hidden') + ' sm:hidden'}>
-                    <div className="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink href={route('dashboard')} active={route().current('dashboard')}>
-                            Dashboard
-                        </ResponsiveNavLink>
-                    </div>
-
-                    <div className="pt-4 pb-1 border-t border-gray-200">
-                        <div className="px-4">
-                            <div className="font-medium text-base text-gray-800">{user.name}</div>
-                            <div className="font-medium text-sm text-gray-500">{user.email}</div>
-                        </div>
-
-                        <div className="mt-3 space-y-1">
-                            <ResponsiveNavLink href={route('profile.edit')}>Profile</ResponsiveNavLink>
-                            <ResponsiveNavLink method="post" href={route('logout')} as="button">
-                                Log Out
-                            </ResponsiveNavLink>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-
-            {header && (
-                <header className="bg-white shadow">
-                    <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">{header}</div>
-                </header>
-            )}
-
-            <main>{children}</main>
+  return (
+    <Layout>
+      <Sider
+        className="!sticky !top-0 left-0 h-screen z-10 shadow"
+        collapsible
+        trigger={null}
+        collapsed={collapsed}
+        style={{ background: colorBgContainer }}
+      >
+        <div className="app-logo flex items-center justify-center h-16">
+          <ApplicationLogo className="block h-9 w-auto fill-current text-gray-600" />
         </div>
-    );
+        <Menu
+          mode="inline"
+          defaultSelectedKeys={route().current()}
+          items={navbarMenu}
+          style={{ background: colorBgContainer }}
+        />
+      </Sider>
+      <Layout>
+        <Header
+          className="sticky top-0 z-10 shadow flex justify-between"
+          style={{
+            padding: 0,
+            background: colorBgContainer,
+          }}
+        >
+          <Button
+            type="text"
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={() => setCollapsed(!collapsed)}
+            style={{
+              fontSize: '16px',
+              width: 64,
+              height: 64,
+            }}
+          />
+          <div className="flex pr-6 items-center space-x-4">
+            {!hideFilter && (
+              <>
+                <div className="flex space-x-2">
+                  <Select
+                    defaultValue={filterUrl.year || filters.years[0].value}
+                    style={{
+                      width: 80,
+                    }}
+                    onChange={onChangeYear}
+                    options={filters.years}
+                  />
+                  <Select
+                    defaultValue={filterUrl.period || 'MTD'}
+                    style={{
+                      width: 100,
+                    }}
+                    onChange={onChangePeriod}
+                    options={filters.periods}
+                  />
+                </div>
+                <div className="py-3 h-full">
+                  <div className="w-[0.5px] h-full bg-gray-400/50" />
+                </div>
+              </>
+            )}
+            <Dropdown>
+              <Dropdown.Trigger>
+                <span className="inline-flex rounded-md">
+                  <button
+                    type="button"
+                    className="inline-flex items-center px-3 py-2 border text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
+                  >
+                    {user.name}
+                    <svg
+                      className="ms-2 -me-0.5 h-4 w-4"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </span>
+              </Dropdown.Trigger>
+              <Dropdown.Content>
+                <Dropdown.Link href={route('profile.edit')}>
+                  Profil saya
+                </Dropdown.Link>
+                <Dropdown.Link
+                  href={route('logout')}
+                  method="post"
+                  as="button"
+                >
+                  Logout
+                </Dropdown.Link>
+              </Dropdown.Content>
+            </Dropdown>
+          </div>
+        </Header>
+        {children
+          ? <main className="p-6 space-y-4">{children}</main>
+          : (
+            <main className="min-h-screen p-6">
+              <Content
+                className="min-h-[280px] p-6"
+                style={{ background: colorBgContainer }}
+              >
+                Content
+              </Content>
+            </main>
+          )}
+      </Layout>
+    </Layout>
+  );
 }
