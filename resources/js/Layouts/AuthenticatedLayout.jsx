@@ -102,8 +102,9 @@ export default function AuthenticatedLayout({ user, children, hideFilter }) {
                   <Select
                     defaultValue={filterUrl.year || filters.years[0].value}
                     style={{
-                      width: 80,
+                      width: 84,
                     }}
+                    placeholder="Tahun"
                     onChange={onChangeYear}
                     options={filters.years}
                   />
