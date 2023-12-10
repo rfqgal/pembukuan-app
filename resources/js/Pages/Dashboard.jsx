@@ -47,6 +47,7 @@ export default function Dashboard({ auth, statistics }) {
       break;
 
     default:
+      period = 'bulan ini';
       break;
   }
 
