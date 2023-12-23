@@ -79,7 +79,7 @@ export default function Dashboard({ auth, statistics }) {
         </CardSubLayout>
         <CardSubLayout>
           <div className="flex justify-between">
-            <Typography.Title level={3}>Pemasukan</Typography.Title>
+            <Typography.Title level={3}>Pengeluaran</Typography.Title>
             <ExportButton routeName="outcome.export" />
           </div>
           <TableComponent
