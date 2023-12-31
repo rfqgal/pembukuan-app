@@ -44,7 +44,7 @@ function EditableCell({
       inputNode = <InputNumber />;
       break;
     case 'date':
-      inputNode = <DatePicker format="YYYY-MM-DD" defaultValue={dayjs(record[dataIndex])} />;
+      inputNode = <DatePicker format="DD-MM-YYYY" defaultValue={dayjs(record[dataIndex])} />;
       break;
     case 'description':
       inputNode = (
@@ -84,9 +84,9 @@ function EditableCell({
 }
 
 function ExpandableRow({ created_at: createdAt, updated_at: updatedAt }) {
-  const createdDate = dayjs(createdAt).format('DD/MM/YYYY HH:mm:ss');
+  const createdDate = dayjs(createdAt).format('DD-MM-YYYY HH:mm:ss');
   const updatedDate = updatedAt !== createdAt
-    ? dayjs(updatedAt).format('DD/MM/YYYY HH:mm:ss')
+    ? dayjs(updatedAt).format('DD-MM-YYYY HH:mm:ss')
     : '-';
 
   return (
@@ -97,7 +97,7 @@ function ExpandableRow({ created_at: createdAt, updated_at: updatedAt }) {
         {createdDate}
       </p>
       <p>
-        Tanggal diubah:
+        Terakhir diubah:
         {' '}
         {updatedDate}
       </p>

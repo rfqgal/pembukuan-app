@@ -107,7 +107,7 @@ export default function Create({ auth, descriptions }) {
                 rules={[{ required: true, message: 'Tanggal harus diisi.' }]}
               >
                 <DatePicker
-                  format="DD/MM/YYYY"
+                  format="DD-MM-YYYY"
                 />
               </Form.Item>
             </div>
@@ -150,7 +150,12 @@ export default function Create({ auth, descriptions }) {
                 render: (text) => text.toLocaleString('id-ID', { maximumFractionDigits: 0 }),
                 sorter: true,
               },
-              { title: 'Tanggal', dataIndex: 'date', sorter: true },
+              {
+                title: 'Tanggal',
+                dataIndex: 'date',
+                render: (text) => dayjs(text).format('DD-MM-YYYY'),
+                sorter: true,
+              },
             ]}
             pageSize={5}
             reload={reload}

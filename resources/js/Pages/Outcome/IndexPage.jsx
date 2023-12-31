@@ -1,6 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import { Button, Typography } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import CardSubLayout from '@/Layouts/SubLayouts/CardSubLayout';
 import EditableTableComponent from '@/Components/Tables/EditableTableComponent';
@@ -47,6 +48,7 @@ export default function Index({ auth }) {
               title: 'Tanggal',
               dataIndex: 'date',
               editable: true,
+              render: (text) => dayjs(text).format('DD-MM-YYYY'),
               sorter: true,
               inputType: 'date',
             },
