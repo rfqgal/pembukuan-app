@@ -42,6 +42,7 @@ class HandleInertiaRequests extends Middleware
             ],
             'filters' => [
                 'years' => FilterHelper::getYears(),
+                'months' => FilterHelper::getMonths(),
                 'periods' => FilterHelper::getPeriods(),
             ]
         ];
