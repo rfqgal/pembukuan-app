@@ -8,7 +8,10 @@ export default function TableComponent({
   const urlParams = new URLSearchParams(window.location.search);
   const filterUrl = {
     year: urlParams.get('year') || null,
-    period: urlParams.get('period') || null,
+    month: urlParams.get('month') || null,
+    period: !urlParams.get('year') && !urlParams.get('month')
+      ? urlParams.get('period') || 'MTD'
+      : null,
   };
 
   const [data, setData] = useState();

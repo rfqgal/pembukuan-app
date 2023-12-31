@@ -24,12 +24,25 @@ export default function AuthenticatedLayout({ user, children, hideFilter }) {
   const urlParams = new URLSearchParams(window.location.search);
   const filterUrl = {
     year: urlParams.get('year') || null,
-    period: urlParams.get('period') || null,
+    month: urlParams.get('month') || null,
+    period: !urlParams.get('year') && !urlParams.get('month')
+      ? urlParams.get('period') || 'MTD'
+      : null,
   };
 
   const onChangeYear = (value) => {
     const formData = {
       year: value,
+      month: undefined,
+      period: undefined,
+    };
+    Object.keys(formData).forEach((k) => !formData[k] && delete formData[k]);
+    router.get(route(route().current()), formData);
+  };
+  const onChangeMonth = (value) => {
+    const formData = {
+      year: filterUrl.year,
+      month: value,
       period: undefined,
     };
     Object.keys(formData).forEach((k) => !formData[k] && delete formData[k]);
@@ -38,6 +51,7 @@ export default function AuthenticatedLayout({ user, children, hideFilter }) {
   const onChangePeriod = (value) => {
     const formData = {
       year: undefined,
+      month: undefined,
       period: value,
     };
     Object.keys(formData).forEach((k) => !formData[k] && delete formData[k]);
@@ -100,7 +114,7 @@ export default function AuthenticatedLayout({ user, children, hideFilter }) {
               <>
                 <div className="flex space-x-2">
                   <Select
-                    defaultValue={filterUrl.year || filters.years[0].value}
+                    defaultValue={filterUrl.year}
                     style={{
                       width: 84,
                     }}
@@ -109,10 +123,21 @@ export default function AuthenticatedLayout({ user, children, hideFilter }) {
                     options={filters.years}
                   />
                   <Select
-                    defaultValue={filterUrl.period || 'MTD'}
+                    defaultValue={filterUrl.month}
+                    style={{
+                      width: 108,
+                    }}
+                    placeholder="Bulan"
+                    onChange={onChangeMonth}
+                    options={filters.months}
+                    disabled={!filterUrl.year}
+                  />
+                  <Select
+                    defaultValue={filterUrl.period}
                     style={{
                       width: 100,
                     }}
+                    placeholder="Periode"
                     onChange={onChangePeriod}
                     options={filters.periods}
                   />
