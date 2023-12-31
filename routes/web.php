@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DescriptionController;
 use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\OutcomeController;
 use App\Http\Controllers\ProfileController;
@@ -43,6 +44,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/outcome/export', [OutcomeController::class, 'export'])->name('outcome.export');
     Route::get('/outcome/create/api', [OutcomeController::class, 'createApi'])->name('outcome.create.api');
     Route::resource('outcome', OutcomeController::class);
+
+    Route::get('/descriptions/income', [DescriptionController::class, 'income'])->name('descriptions.income');
+    Route::get('/descriptions/outcome', [DescriptionController::class, 'outcome'])->name('descriptions.outcome');
 });
 
 require __DIR__.'/auth.php';
