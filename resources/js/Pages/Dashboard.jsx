@@ -1,5 +1,6 @@
 import { Head } from '@inertiajs/react';
 import { Typography } from 'antd';
+import dayjs from 'dayjs';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import CardStatistic from '@/Components/Charts/CardStatistic';
 import CardSubLayout from '@/Layouts/SubLayouts/CardSubLayout';
@@ -19,6 +20,7 @@ export default function Dashboard({ auth, statistics }) {
       title: 'Tanggal',
       dataIndex: 'date',
       width: '22%',
+      render: (text) => dayjs(text).format('DD-MM-YYYY'),
       sorter: true,
       defaultSortOrder: 'descend',
     },
