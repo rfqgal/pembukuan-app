@@ -6,6 +6,7 @@ use App\Exports\OutcomesExport;
 use App\Helpers\BalanceHelper;
 use App\Helpers\FilterHelper;
 use App\Http\Response\APIResponse;
+use App\Models\Description;
 use App\Models\Outcome;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
@@ -72,7 +73,11 @@ class OutcomeController extends Controller
      */
     public function create(Request $request)
     {
-        return Inertia::render('Outcome/CreatePage');
+        $descriptions = Description::select('value')
+            ->where('type', Description::INCOME_TYPE)
+            ->get();
+        
+        return Inertia::render('Outcome/CreatePage', compact('descriptions'));
     }
 
     /**
@@ -104,11 +109,16 @@ class OutcomeController extends Controller
         try {
             DB::beginTransaction();
             
+            $description = Description::firstOrCreate([
+                'type' => Description::OUTCOME_TYPE,
+                'value' => $request->description,
+            ]);
+            
             $balance = BalanceHelper::createOutcome($request->nominal);
         
             $create = Outcome::create([
                 'nominal' => $request->nominal,
-                'description' => $request->description,
+                'description' => $description->value,
                 'date' => $request->date,
                 'balance_before' => $balance->before,
                 'balance_after' => $balance->after,
@@ -134,13 +144,18 @@ class OutcomeController extends Controller
     {
         try {
             DB::beginTransaction();
+            
+            $description = Description::firstOrCreate([
+                'type' => Description::OUTCOME_TYPE,
+                'value' => $request->description,
+            ]);
 
             $nominal = $request->nominal - $outcome->nominal;
             $balance = BalanceHelper::updateOutcome($nominal);
             
             $outcome->nominal = $request->nominal;
             $outcome->date = $request->date;
-            $outcome->description = $request->description;
+            $outcome->description = $description->value;
             $outcome->balance_after += $balance->difference;
             $outcome->save();
             
