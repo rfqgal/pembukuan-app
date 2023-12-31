@@ -36,8 +36,6 @@ export default function TableComponent({
     axios.get(route, { params })
       .then(({ data: result }) => {
         setData(result.data);
-        setLoading(false);
-        setLoading(false);
         setTableParams({
           ...tableParams,
           pagination: {
@@ -45,6 +43,9 @@ export default function TableComponent({
             total: result.total,
           },
         });
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 

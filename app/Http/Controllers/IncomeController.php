@@ -6,7 +6,9 @@ use App\Exports\IncomesExport;
 use App\Helpers\FilterHelper;
 use App\Http\Response\APIResponse;
 use App\Helpers\BalanceHelper;
+use App\Models\Description;
 use App\Models\Income;
+use Carbon\Carbon;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -72,7 +74,11 @@ class IncomeController extends Controller
      */
     public function create(Request $request)
     {
-        return Inertia::render('Income/CreatePage');
+        $descriptions = Description::select('value')
+            ->where('type', Description::INCOME_TYPE)
+            ->get();
+        
+        return Inertia::render('Income/CreatePage', compact('descriptions'));
     }
 
     /**
@@ -104,11 +110,16 @@ class IncomeController extends Controller
         try {
             DB::beginTransaction();
             
+            $description = Description::firstOrCreate([
+                'type' => Description::INCOME_TYPE,
+                'value' => $request->description,
+            ]);
+            
             $balance = BalanceHelper::createIncome($request->nominal);
         
             $create = Income::create([
                 'nominal' => $request->nominal,
-                'description' => $request->description,
+                'description' => $description->value,
                 'date' => $request->date,
                 'balance_before' => $balance->before,
                 'balance_after' => $balance->after,
@@ -135,12 +146,17 @@ class IncomeController extends Controller
         try {
             DB::beginTransaction();
 
+            $description = Description::firstOrCreate([
+                'type' => Description::INCOME_TYPE,
+                'value' => $request->description,
+            ]);
+            
             $nominal = $request->nominal - $income->nominal;
             $balance = BalanceHelper::updateIncome($nominal);
     
             $income->nominal = $request->nominal;
             $income->date = $request->date;
-            $income->description = $request->description;
+            $income->description = $description->value;
             $income->balance_after += $balance->difference;
             $income->save();
             

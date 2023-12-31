@@ -33,6 +33,7 @@ export default function Index({ auth }) {
               title: 'Deskripsi',
               dataIndex: 'description',
               editable: true,
+              inputType: 'description',
             },
             {
               title: 'Nominal',
