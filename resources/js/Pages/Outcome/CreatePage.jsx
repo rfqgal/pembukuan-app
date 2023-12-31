@@ -1,19 +1,37 @@
 import { Head } from '@inertiajs/react';
 import {
+  AutoComplete,
   Button,
   DatePicker, Form, Input, InputNumber, notification,
 } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import CardSubLayout from '@/Layouts/SubLayouts/CardSubLayout';
 import TableComponent from '@/Components/Tables/TableComponent';
 
-export default function Create({ auth }) {
+// eslint-disable-next-line arrow-body-style
+const filterOption = (inputValue, option) => {
+  return option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1;
+};
+
+export default function Create({ auth, descriptions }) {
   const [form] = Form.useForm();
+  const [options, setOptions] = useState(descriptions);
   const [reload, setReload] = useState(0);
   const [loading, setLoading] = useState(false);
+
+  const fetchData = () => {
+    axios.get(route('descriptions.outcome'))
+      .then(({ data }) => {
+        setOptions(data);
+      });
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [reload]);
 
   const onFinish = async () => {
     const data = await form.validateFields();
@@ -75,7 +93,6 @@ export default function Create({ auth }) {
                 label="Nominal"
                 name="nominal"
                 rules={[{ required: true, message: 'Nominal harus diisi.' }]}
-
               >
                 <InputNumber
                   className="w-full"
@@ -88,7 +105,6 @@ export default function Create({ auth }) {
                 label="Tanggal"
                 name="date"
                 rules={[{ required: true, message: 'Tanggal harus diisi.' }]}
-
               >
                 <DatePicker
                   format="DD/MM/YYYY"
@@ -96,15 +112,21 @@ export default function Create({ auth }) {
               </Form.Item>
             </div>
             <Form.Item
-              className="pt-1"
+              className="pt-2"
               label="Deskripsi"
               name="description"
               rules={[{ required: true, message: 'Deskripsi harus diisi.' }]}
             >
-              <Input.TextArea
-                rows={4}
-                allowClear
-              />
+              <AutoComplete
+                options={options}
+                filterOption={filterOption}
+              >
+                <Input.TextArea
+                  className="block"
+                  rows={3}
+                  allowClear
+                />
+              </AutoComplete>
             </Form.Item>
             <Form.Item className="pt-4">
               <Button

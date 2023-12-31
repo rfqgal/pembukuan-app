@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
+  AutoComplete,
   Button, DatePicker, Form, Input, InputNumber, Popconfirm, Table, notification,
 } from 'antd';
 import {
@@ -8,6 +9,11 @@ import {
 import dayjs from 'dayjs';
 import axios from 'axios';
 import { renderNotification } from '@/Utils/ResponseHelper';
+
+// eslint-disable-next-line arrow-body-style
+const filterOption = (inputValue, option) => {
+  return option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1;
+};
 
 function EditableCell({
   editing,
@@ -20,6 +26,18 @@ function EditableCell({
   ...restProps
 }) {
   let inputNode;
+  const [options, setOptions] = useState([]);
+
+  const fetchData = () => {
+    axios.get(route('descriptions.income'))
+      .then(({ data }) => {
+        setOptions(data);
+      });
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [options]);
 
   switch (inputType) {
     case 'number':
@@ -27,6 +45,16 @@ function EditableCell({
       break;
     case 'date':
       inputNode = <DatePicker format="YYYY-MM-DD" defaultValue={dayjs(record[dataIndex])} />;
+      break;
+    case 'description':
+      inputNode = (
+        <AutoComplete
+          options={options}
+          filterOption={filterOption}
+        >
+          <Input size="small" allowClear />
+        </AutoComplete>
+      );
       break;
     default:
       inputNode = <Input />;
