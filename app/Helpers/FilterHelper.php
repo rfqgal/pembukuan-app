@@ -49,9 +49,32 @@ class FilterHelper
     {
         return [
             ['value' => 'Today', 'label' => 'Hari ini'],
-            ['value' => 'MTD', 'label' => 'Bulanan'],
-            ['value' => 'YTD', 'label' => 'Tahunan'],
+            ['value' => 'MTD', 'label' => 'Bulan ini'],
+            ['value' => 'YTD', 'label' => 'Tahun ini'],
             ['value' => 'All', 'label' => 'Semua'],
+        ];
+    }
+
+    /**
+     * Get months filter
+     *
+     * @return array
+     */
+    public static function getMonths()
+    {
+        return [
+            ['value' => 'January', 'label' => 'Januari'],
+            ['value' => 'February', 'label' => 'Februari'],
+            ['value' => 'March', 'label' => 'Maret'],
+            ['value' => 'April', 'label' => 'April'],
+            ['value' => 'May', 'label' => 'Mei'],
+            ['value' => 'June', 'label' => 'Juni'],
+            ['value' => 'July', 'label' => 'Juli'],
+            ['value' => 'August', 'label' => 'Agustus'],
+            ['value' => 'September', 'label' => 'September'],
+            ['value' => 'October', 'label' => 'Oktober'],
+            ['value' => 'November', 'label' => 'November'],
+            ['value' => 'December', 'label' => 'Desember'],
         ];
     }
 
@@ -63,6 +86,15 @@ class FilterHelper
      */
     public static function setTimeBetween(Request $request)
     {
+        if ($request->has('year', 'month')) {
+            $time = Carbon::createFromFormat('d F Y', 1 . ' ' . $request->month . ' ' . $request->year);
+            
+            $startMonth = $time->startOfMonth()->toDateString();
+            $endMonth = $time->endOfMonth()->toDateString();
+
+            return [$startMonth, $endMonth];
+        }
+
         if ($request->has('year')) {
             $time = Carbon::createFromFormat('Y', $request->year);
 

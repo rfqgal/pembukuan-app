@@ -6,6 +6,7 @@ import CardStatistic from '@/Components/Charts/CardStatistic';
 import CardSubLayout from '@/Layouts/SubLayouts/CardSubLayout';
 import TableComponent from '@/Components/Tables/TableComponent';
 import ExportButton from '@/Components/ExportButton';
+import { translateMonth } from '@/Utils/FunctionHelper';
 
 export default function Dashboard({ auth, statistics }) {
   const columns = [
@@ -29,7 +30,10 @@ export default function Dashboard({ auth, statistics }) {
   const urlParams = new URLSearchParams(window.location.search);
   const filterUrl = {
     year: urlParams.get('year') || null,
-    period: urlParams.get('period') || null,
+    month: urlParams.get('month') || null,
+    period: !urlParams.get('year') && !urlParams.get('month')
+      ? urlParams.get('period') || 'MTD'
+      : null,
   };
 
   let period;
@@ -53,7 +57,9 @@ export default function Dashboard({ auth, statistics }) {
       break;
   }
 
-  if (filterUrl.year) {
+  if (filterUrl.year && filterUrl.month) {
+    period = `bulan ${translateMonth(filterUrl.month)} ${filterUrl.year}`;
+  } else if (filterUrl.year) {
     period = `tahun ${filterUrl.year}`;
   }
 
